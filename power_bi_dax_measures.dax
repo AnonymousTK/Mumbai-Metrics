@@ -1,0 +1,102 @@
+// =========================================================================
+// POWER BI DAX MEASURES FOR MUMBAI REAL ESTATE ANALYTICS DASHBOARD
+// Table: fact_mumbai_housing
+// =========================================================================
+
+// -------------------------------------------------------------------------
+// 1. CORE MARKET KEY PERFORMANCE INDICATORS (KPIs)
+// -------------------------------------------------------------------------
+
+Total Properties = 
+COUNTROWS(fact_mumbai_housing)
+
+Total Portfolio Valuation (Cr) = 
+SUM(fact_mumbai_housing[price_in_crores])
+
+Avg Price (Lakhs) = 
+AVERAGE(fact_mumbai_housing[price_in_lakhs])
+
+Median Price (Lakhs) = 
+MEDIAN(fact_mumbai_housing[price_in_lakhs])
+
+Avg Price per SqFt = 
+AVERAGE(fact_mumbai_housing[price_per_sqft])
+
+Avg Expected ROI % = 
+AVERAGE(fact_mumbai_housing[expected_roi(%)])
+
+Avg Market Volatility = 
+AVERAGE(fact_mumbai_housing[market_volatility_score])
+
+Avg Property Liquidity = 
+AVERAGE(fact_mumbai_housing[property_liquidity_index])
+
+Avg Area (SqFt) = 
+AVERAGE(fact_mumbai_housing[area])
+
+
+// -------------------------------------------------------------------------
+// 2. SEGMENTATION & RATIO MEASURES
+// -------------------------------------------------------------------------
+
+High ROI Property Count = 
+CALCULATE(
+    COUNTROWS(fact_mumbai_housing),
+    fact_mumbai_housing[roi_tier] = "High ROI (> 7%)"
+)
+
+High ROI Property Share % = 
+DIVIDE([High ROI Property Count], [Total Properties], 0)
+
+Ready to Move Count = 
+CALCULATE(
+    COUNTROWS(fact_mumbai_housing),
+    fact_mumbai_housing[status] = "Ready to move"
+)
+
+Ready to Move Share % = 
+DIVIDE([Ready to Move Count], [Total Properties], 0)
+
+Under Construction Count = 
+CALCULATE(
+    COUNTROWS(fact_mumbai_housing),
+    fact_mumbai_housing[status] = "Under Construction"
+)
+
+Under Construction Share % = 
+DIVIDE([Under Construction Count], [Total Properties], 0)
+
+Luxury Property Share % = 
+DIVIDE(
+    CALCULATE([Total Properties], fact_mumbai_housing[price_segment] = "Luxury (> 3Cr)"),
+    [Total Properties],
+    0
+)
+
+
+// -------------------------------------------------------------------------
+// 3. ADVANCED INVESTMENT & RISK MEASURES
+// -------------------------------------------------------------------------
+
+Risk Adjusted ROI Index = 
+DIVIDE([Avg Expected ROI %], [Avg Market Volatility], 0)
+
+High Yield Low Risk Count = 
+CALCULATE(
+    COUNTROWS(fact_mumbai_housing),
+    fact_mumbai_housing[expected_roi(%)] >= 7.0,
+    fact_mumbai_housing[market_volatility_score] <= 5.5
+)
+
+Selected Region Avg Price/SqFt = 
+CALCULATE(
+    [Avg Price per SqFt],
+    ALLSELECTED(fact_mumbai_housing[region])
+)
+
+Price Variance vs Region Avg % = 
+DIVIDE(
+    [Avg Price per SqFt] - [Selected Region Avg Price/SqFt],
+    [Selected Region Avg Price/SqFt],
+    0
+)

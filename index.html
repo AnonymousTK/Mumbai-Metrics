@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mumbai Real Estate Analytics | Modern Data Dashboard</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header Banner -->
+  <header class="app-header">
+    <div class="brand-container">
+      <div class="brand-logo">MH</div>
+      <div class="brand-title">
+        <h1>Mumbai Real Estate Analytics</h1>
+        <p>Market Intelligence & Investment Return Dashboard</p>
+      </div>
+    </div>
+    <div class="header-badges">
+      <div class="badge active">
+        <div class="status-dot"></div>
+        <span>SQLite Database Connected</span>
+      </div>
+      <div class="badge">
+        <span>Dataset: 76,038 Listings</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main App Container -->
+  <div class="main-container">
+
+    <!-- Global Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label for="filter-region">Region</label>
+        <select id="filter-region" class="filter-select">
+          <option value="ALL">All Regions (228)</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="filter-bhk">BHK Category</label>
+        <select id="filter-bhk" class="filter-select">
+          <option value="ALL">All Configurations</option>
+          <option value="1 BHK">1 BHK</option>
+          <option value="2 BHK">2 BHK</option>
+          <option value="3 BHK">3 BHK</option>
+          <option value="4+ BHK">4+ BHK</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="filter-status">Property Status</label>
+        <select id="filter-status" class="filter-select">
+          <option value="ALL">All Statuses</option>
+          <option value="Ready to move">Ready to Move</option>
+          <option value="Under Construction">Under Construction</option>
+        </select>
+      </div>
+      <button id="btn-reset-filters" class="reset-btn">Reset Filters</button>
+    </div>
+
+    <!-- Executive KPI Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card emerald">
+        <div class="kpi-label">Total Properties</div>
+        <div class="kpi-value" id="kpi-total-properties">76,038</div>
+        <div class="kpi-subtext">Cleaned & Normalized</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Portfolio Valuation</div>
+        <div class="kpi-value" id="kpi-valuation">₹1,28,061 Cr</div>
+        <div class="kpi-subtext">Cumulative Market Value</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-label">Avg Price / SqFt</div>
+        <div class="kpi-value" id="kpi-price-sqft">₹15,118.8</div>
+        <div class="kpi-subtext">Per SqFt Benchmark</div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-label">Avg Expected ROI</div>
+        <div class="kpi-value" id="kpi-avg-roi">9.61%</div>
+        <div class="kpi-subtext">Annual Forecast Yield</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Avg Market Volatility</div>
+        <div class="kpi-value" id="kpi-volatility">5.51 / 10</div>
+        <div class="kpi-subtext">Risk Index Score</div>
+      </div>
+      <div class="kpi-card emerald">
+        <div class="kpi-label">Property Liquidity</div>
+        <div class="kpi-value" id="kpi-liquidity">9.30 / 10</div>
+        <div class="kpi-subtext">Market Demand Index</div>
+      </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" data-tab="overview">Executive Overview</button>
+      <button class="tab-btn" data-tab="micromarket">Micro-Market & Locality</button>
+      <button class="tab-btn" data-tab="investment">Investment & Risk Matrix</button>
+      <button class="tab-btn" data-tab="powerbi">Power BI & DB Hub</button>
+    </div>
+
+    <!-- Tab 1: Executive Overview -->
+    <div id="tab-overview" class="tab-content active">
+      <div class="charts-grid">
+        <div class="chart-card col-8">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Top 10 Regions by Property Listing Volume</div>
+              <div class="chart-subtitle">Thane West & Mira Road East dominate supply volume</div>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-region-volume"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card col-4">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Property Type Share</div>
+              <div class="chart-subtitle">Distribution by structural type</div>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-property-type"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card col-6">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Price Segment Share (Lakhs & Crores)</div>
+              <div class="chart-subtitle">Budget vs Mid-Segment vs Premium vs Luxury</div>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-price-segment"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card col-6">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">BHK Configuration Pricing & SqFt Benchmark</div>
+              <div class="chart-subtitle">Average Total Cost (Lakhs) vs Rate / SqFt (₹)</div>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-bhk-summary"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Micro-Market & Locality -->
+    <div id="tab-micromarket" class="tab-content">
+      <div class="charts-grid">
+        <div class="chart-card col-12">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Top 10 High Value Micro-Markets (Avg Price / SqFt)</div>
+              <div class="chart-subtitle">Highest valued property zones across Mumbai</div>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-top-localities"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card col-12">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Searchable Locality Performance Table</div>
+              <div class="chart-subtitle">Showing top localities by property volume, average price, ROI, and volatility</div>
+            </div>
+            <input type="text" id="search-locality" class="filter-select" placeholder="Search locality or region..." style="width: 260px;">
+          </div>
+          <div class="table-container">
+            <table class="data-table" id="table-locality">
+              <thead>
+                <tr>
+                  <th>Locality</th>
+                  <th>Region</th>
+                  <th>Properties</th>
+                  <th>Avg Price</th>
+                  <th>Avg Price / SqFt</th>
+                  <th>Expected ROI %</th>
+                  <th>Volatility</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Investment Return & Risk Matrix -->
+    <div id="tab-investment" class="tab-content">
+      <div class="charts-grid">
+        <div class="chart-card col-12">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Risk vs Return Quadrant: Expected ROI % vs Market Volatility</div>
+              <div class="chart-subtitle">Identify Golden Quadrant Localities (High ROI > 7%, Volatility < 5.5)</div>
+            </div>
+          </div>
+          <div class="chart-wrapper" style="height: 380px;">
+            <canvas id="chart-roi-volatility"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card col-12">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Top High Potential Investment Zones (High ROI & Low Volatility)</div>
+              <div class="chart-subtitle">Optimal risk-adjusted yield micro-markets</div>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table" id="table-investment">
+              <thead>
+                <tr>
+                  <th>Locality</th>
+                  <th>Region</th>
+                  <th>Listings</th>
+                  <th>Avg Price</th>
+                  <th>Avg Price / SqFt</th>
+                  <th>Expected ROI %</th>
+                  <th>Volatility Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Power BI & SQLite Hub -->
+    <div id="tab-powerbi" class="tab-content">
+      <div class="hub-grid">
+        <div class="hub-card">
+          <div class="hub-icon">DB</div>
+          <h3>SQLite Relational Database</h3>
+          <p>Contains <code>fact_mumbai_housing</code>, <code>dim_locality</code>, <code>dim_property_type</code>, and SQL analytical views (<code>v_region_summary</code>, <code>v_locality_top_roi</code>).</p>
+          <a href="mumbai_housing.db" download class="hub-link">Download Database (mumbai_housing.db)</a>
+        </div>
+
+        <div class="hub-card">
+          <div class="hub-icon">CSV</div>
+          <h3>Cleaned Analytical Dataset</h3>
+          <p>Fully cleaned and standardized CSV file (76,038 records) ready for instant Power BI, Tableau, or Excel import.</p>
+          <a href="mumbai_house_data_cleaned.csv" download class="hub-link">Download Cleaned CSV</a>
+        </div>
+
+        <div class="hub-card">
+          <div class="hub-icon">PBI</div>
+          <h3>Power BI Dark Theme JSON</h3>
+          <p>Modern glassmorphism/dark mode JSON theme file featuring custom slate backgrounds and neon emerald visual styling.</p>
+          <a href="power_bi_theme.json" download class="hub-link">Download PBI Theme JSON</a>
+        </div>
+
+        <div class="hub-card">
+          <div class="hub-icon">DAX</div>
+          <h3>DAX Measure Formulas</h3>
+          <p>Production-ready DAX measure scripts for total valuation, price variance, high yield property count, and volatility index.</p>
+          <a href="power_bi_dax_measures.dax" download class="hub-link">Download DAX Measures</a>
+        </div>
+      </div>
+
+      <div class="chart-card" style="margin-top: 24px;">
+        <div class="chart-title" style="margin-bottom: 12px;">Power BI Setup Quick Start Guide</div>
+        <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">
+          1. Open <strong>Microsoft Power BI Desktop</strong>.<br>
+          2. Click <strong>Get Data</strong> &rarr; <strong>Text/CSV</strong> and choose <code>mumbai_house_data_cleaned.csv</code>.<br>
+          3. Go to the <strong>View</strong> tab &rarr; <strong>Themes</strong> &rarr; <strong>Browse for Themes</strong> and select <code>power_bi_theme.json</code>.<br>
+          4. Open <code>power_bi_dax_measures.dax</code> and copy the DAX measures into your Power BI table.<br>
+          5. Refer to <code>POWER_BI_DASHBOARD_GUIDE.md</code> in the project directory for complete 3-page layout blueprints!
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>Mumbai Real Estate Data Analytics Project &bull; Built with Python, SQLite, Power BI & Modern HTML5/CSS3/JS</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
